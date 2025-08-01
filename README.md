@@ -1,0 +1,238 @@
+# Stock Portfolio Tracker
+
+This is a simple, beginner-friendly Java application for tracking a stock portfolio. It's built using Object-Oriented principles and provides a basic command-line interface (CLI).
+
+## Features
+
+- **Add a stock**: Add a new stock to your portfolio with its symbol, quantity, and buy price.
+- **Remove a stock**: Remove a stock from your portfolio using its symbol.
+- **View portfolio**: See a summary of all your stocks, including current value and gain/loss per stock.
+- **Simulated Prices**: Stock prices are simulated with a random generator for demonstration purposes.
+- **Export to CSV**: Export your portfolio summary to a `.csv` file.
+- **Unit Tested**: Core business logic in `PortfolioManager` is verified with JUnit tests.
+
+## Project Structure
+
+The project is organized into several classes, each with a specific responsibility:
+
+- `Main.java`: Handles all user interaction via the command-line interface.
+- `Stock.java`: A model class representing a single stock holding.
+- `PortfolioManager.java`: The core class that manages the list of stocks, and handles adding, removing, and calculations.
+- `PriceFetcher.java`: A service class responsible for fetching stock prices. It currently simulates prices but is designed to be easily replaced with a real API.
+- `ReportService.java`: A service for exporting portfolio data to different formats (currently CSV).
+- `PortfolioManagerTest.java`: JUnit tests for the `PortfolioManager` class.
+
+## How to Run
+
+### Prerequisites
+
+- Java Development Kit (JDK) 11 or higher.
+- Apache Maven (for easy dependency management and running).
+- Git (to clone the repository, or you can create the files manually).
+
+### Steps
+
+1.  **Set up the Project Directory:**
+    Create the following directory structure. All Java files will go into the `src/main/java/com/stocktracker` and `src/test/java/com/stocktracker` folders.
+
+    ```
+    StockPortfolioTracker/
+    ├── src/
+    │   ├── main/
+    │   │   └── java/
+    │   │       └── com/
+    │   │           └── stocktracker/
+    │   │               ├── (Java files go here)
+    │   │
+    │   └── test/
+    │       └── java/
+    │           └── com/
+    │               └── stocktracker/
+    │                   └── (Test files go here)
+    │
+    ├── pom.xml
+    └── README.md
+    ```
+
+2.  **Create the `pom.xml` file:**
+    Place this file in the root `StockPortfolioTracker/` directory. It tells Maven how to build your project and what dependencies (like JUnit) are needed.
+
+    ```xml
+    <project xmlns="http://maven.apache.org/POM/4.0.0"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>com.stocktracker</groupId>
+        <artifactId>StockPortfolioTracker</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <properties>
+            <maven.compiler.source>11</maven.compiler.source>
+            <maven.compiler.target>11</maven.compiler.target>
+        </properties>
+        <dependencies>
+            <!-- JUnit 5 for testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.8.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.8.2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+        <build>
+           <plugins>
+               <plugin>
+                   <artifactId>maven-surefire-plugin</artifactId>
+                   <version>2.22.2</version>
+               </plugin>
+           </plugins>
+        </build>
+    </project>
+    ```
+
+3.  **Add the Java Source Code:**
+    Create the Java files provided in the sections below inside the `src/main/java/com/stocktracker/` directory.
+
+4.  **Compile and Run the Application:**
+    Open a terminal or command prompt in the root `StockPortfolioTracker/` directory.
+
+    - **Compile the code:**
+      ```sh
+      mvn compile
+      ```
+    - **Run the main application:**
+      ```sh
+      mvn exec:java -Dexec.mainClass="com.stocktracker.Main"
+      ```
+
+5.  **Run the Tests:**
+    To ensure everything is working correctly, run the unit tests:
+    ```sh
+    mvn test
+    ```
+
+## Sample Output
+
+Here is a sample session with the application:
+Welcome to the Stock Portfolio Tracker!
+
+--- Main Menu ---
+
+Add a stock to your portfolio
+
+Remove a stock from your portfolio
+
+View your portfolio
+
+Export portfolio to CSV
+
+Exit
+Choose an option: 1
+Enter stock symbol (e.g., AAPL): AAPL
+Enter quantity: 20
+Enter buy price per share: 150.50
+Stock AAPL added successfully.
+
+--- Main Menu ---
+...
+Choose an option: 1
+Enter stock symbol (e.g., AAPL): GOOG
+Enter quantity: 5
+Enter buy price per share: 2750
+Stock GOOG added successfully.
+
+--- Main Menu ---
+...
+Choose an option: 3
+
+--------------------------------- Your Portfolio ---------------------------------
+Symbol Quantity Buy Price Current Price Total Value Gain/Loss
+AAPL 20 $150.50 $141.65 $2833.02 $-176.98
+GOOG 5 $2750.00 $2912.87 $14564.35 $814.35
+Total Portfolio Value: $17397.37
+Total Portfolio Gain/Loss: $637.37
+--- Main Menu ---
+...
+Choose an option: 4
+Portfolio successfully exported to generated_reports/portfolio_summary_20231027_103000.csv
+
+--- Main Menu ---
+...
+Choose an option: 5
+Thank you for using the Stock Portfolio Tracker!
+
+---
+
+### Project Source Code
+
+Create the following files inside `src/main/java/com/stocktracker/`.
+
+#### 1. `Stock.java` (The Model Class)
+
+This class is a simple POJO that represents a single stock holding.
+
+```java
+package com.stocktracker;
+
+/**
+ * Represents a single stock in the portfolio.
+ * This class holds information about the stock's symbol, the quantity owned,
+ * the price at which it was purchased, and its current market price.
+ */
+public class Stock {
+    private String symbol;
+    private int quantity;
+    private double buyPrice;
+    private double currentPrice;
+
+    /**
+     * Constructs a new Stock object.
+     *
+     * @param symbol   The stock ticker symbol (e.g., "AAPL").
+     * @param quantity The number of shares owned.
+     * @param buyPrice The average price paid per share.
+     */
+    public Stock(String symbol, int quantity, double buyPrice) {
+        this.symbol = symbol;
+        this.quantity = quantity;
+        this.buyPrice = buyPrice;
+        this.currentPrice = buyPrice; // Initially, current price is the buy price.
+    }
+
+    // --- Getters and Setters ---
+    public String getSymbol() { return symbol; }
+    public int getQuantity() { return quantity; }
+    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public double getBuyPrice() { return buyPrice; }
+    public void setBuyPrice(double buyPrice) { this.buyPrice = buyPrice; }
+    public double getCurrentPrice() { return currentPrice; }
+    public void setCurrentPrice(double currentPrice) { this.currentPrice = currentPrice; }
+
+    /**
+     * Calculates the total value of this stock holding.
+     * @return The current value (quantity * currentPrice).
+     */
+    public double getTotalValue() {
+        return this.quantity * this.currentPrice;
+    }
+
+    /**
+     * Calculates the total gain or loss for this stock holding.
+     * @return The difference between the current value and the initial cost.
+     */
+    public double getGainLoss() {
+        return (this.currentPrice - this.buyPrice) * this.quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "Stock{" + "symbol='" + symbol + '\'' + ", quantity=" + quantity +
+                ", buyPrice=" + buyPrice + ", currentPrice=" + currentPrice + '}';
+    }
+}
+```
